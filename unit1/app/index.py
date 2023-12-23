@@ -1,9 +1,9 @@
 # Phần Controller trong mô hình
-from flask import Flask, render_template, request #Dòng này import module Flask, cần thiết để tạo ứng dụng web.
+from flask import render_template, request #Dòng này import module Flask, cần thiết để tạo ứng dụng web.
 import dao
-#Dòng này tạo một instance của class Flask và gán cho biến app.
-#Biến __name__ là một biến đặc biệt trong Python và đại diện cho tên của module hiện tại.
-app = Flask(__name__)
+from app import app
+
+
 
 #Dòng này là một decorator (bộ trang trí), nó gắn liên kết với hàm bên dưới với URL gốc ("/") của ứng dụng web.
 #Nghĩa là khi người dùng truy cập vào URL gốc của ứng dụng, hàm bên dưới sẽ được thực thi.
