@@ -1,4 +1,4 @@
-from app.models import Category, Product
+from app.models import Category, Product, User
 def load_categories():
     return Category.query.all()
 
@@ -11,3 +11,5 @@ def load_products(kw=None):
  return products.all()
 
 
+def get_user_by_id(id):
+    return User.query.get(id)
