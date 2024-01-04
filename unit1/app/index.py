@@ -18,13 +18,13 @@ def index():
     cate_id = request.args.get('cate_id')
     page = request.args.get("page")
 
-    # cates = dao.load_categories() #Gọi hàm bên modul khác
+    cates = dao.load_categories() #Gọi hàm bên modul khác
     products = dao.load_products(kw=kw, cate_id=cate_id, page=page)
     # Số lượng sản phẩm trong data
     total = dao.count_product()
 
     # Gửi thông tin ra ngoài (gửi lên web)
-    return render_template('index.html',
+    return render_template('index.html',categories = cates,
                            products=products,
                            pages=math.ceil(total / app.config['PAGE_SIZE']))
     #categories là tên biến, cates là giá trị gửi ra
