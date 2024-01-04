@@ -1,7 +1,9 @@
 # Phần Controller trong mô hình
-from flask import render_template, request #Dòng này import module Flask, cần thiết để tạo ứng dụng web.
+import math
+from flask import render_template, request, redirect, session, jsonify
 import dao
 from app import app, login
+from flask_login import login_user, logout_user, login_required
 
 
 
@@ -10,26 +12,43 @@ from app import app, login
 @app.route('/') #Định tuyến đường dẫn. Mặc định nhận get
 def index():
     #Những thông tin từ client gửi lên server đều được đóng gói trong request (c->v: Mô dình mcv)
+    #Lấy giá trị của tham số được truyền trong URL
+    #Qua phần layout/header để xem cách lấy trong URL
     kw = request.args.get('kw')
-    cates = dao.load_categories() #Gọi hàm bên modul khác
-    products = dao.load_products(kw=kw)
-    return render_template('index.html', categories = cates, products = products)
+    cate_id = request.args.get('cate_id')
+    page = request.args.get("page")
+
+    # cates = dao.load_categories() #Gọi hàm bên modul khác
+    products = dao.load_products(kw=kw, cate_id=cate_id, page=page)
+    # Số lượng sản phẩm trong data
+    total = dao.count_product()
+
+    # Gửi thông tin ra ngoài (gửi lên web)
+    return render_template('index.html',
+                           products=products,
+                           pages=math.ceil(total / app.config['PAGE_SIZE']))
     #categories là tên biến, cates là giá trị gửi ra
+    # math.ceil là hàm làm tròn lên : 1,2 -> 2
 
 
-# @app.route('/products/<id>')
-# def details(id):
-#     return render_template('details.html')
+
 
 @app.route('/admin/login', methods=['post'])
-def process_admin_login():
-    request.form.get('username')
-    request.form.get('password')
+def login_admin_process():
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    user = dao.auth_user(username=username, password=password)
+    if user:
+        login_user(user=user)
+    # redirect: chuyển trang
+    # Sau khi đăng nhập thì chuyển về trang admin
+    return redirect('/admin')
 
 
 @login.user_loader
 def load_user(user_id):
-    return dao.get.user_by_id(user_id)
+    return dao.get_user_by_id(user_id)
 
 
 
