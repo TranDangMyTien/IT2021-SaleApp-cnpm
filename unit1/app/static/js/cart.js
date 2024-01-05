@@ -44,3 +44,38 @@ function updateCart(id, obj) {
             d.innerText = data.total_quantity
     });
 }
+
+//Hàm xóa và xử lý xác nhận xóa
+function deleteCart(id, obj) {
+    if (confirm("Bạn có chắc chắn xóa không?") === true) {
+        obj.disabled = true;
+        fetch(`/api/cart/${id}`, {
+            method: 'delete'
+        }).then(res => res.json()).then(data => {
+            obj.disabled = false;
+            let c = document.getElementsByClassName('cart-counter');
+            for (let d of c)
+                d.innerText = data.total_quantity
+
+            let r = document.getElementById(`product${id}`);
+//            Ẩn đi những cái đã xóa trong trang giỏi hàng
+            r.style.display = "none";
+        });
+    }
+}
+
+
+//Hàm thanh toán, xác nhận người dùng có muốn thanh toán
+function pay() {
+    if (confirm("Bạn chắc chắn thanh toán!") === true) {
+        fetch("/api/pay", {
+            method: "post"
+        }).then(res => res.json()).then(data => {
+//        == 200 là thành công
+            if (data.status === 200)
+                location.reload();
+            else
+                alert(data.err_msg);
+        })
+    }
+}

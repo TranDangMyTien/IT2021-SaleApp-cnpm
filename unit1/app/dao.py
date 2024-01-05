@@ -1,7 +1,9 @@
-from app.models import Category, Product, User
+from app.models import Category, Product, User, Receipt, ReceiptDetails
 from app import app, db
 import hashlib
-
+import cloudinary.uploader
+from flask_login import current_user
+from sqlalchemy import func
 
 def load_categories():
     return Category.query.all()
@@ -39,3 +41,31 @@ def auth_user(username, password):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
     return User.query.filter(User.username.__eq__(username.strip()),
                             User.password.__eq__(password)).first()
+
+
+# Hàm thêm user
+def add_user(name, username, password, avatar):
+    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+    u = User(name=name, username=username, password=password)
+    if avatar:
+        res = cloudinary.uploader.upload(avatar)
+        print(res)
+        # secure_url : URL đã upload lên cloud, lưu về máy
+        u.avatar = res['secure_url']
+
+    db.session.add(u)
+    db.session.commit()
+
+
+# Hàm thêm hóa đơn
+def add_receipt(cart):
+    if cart:
+        r = Receipt(user=current_user)
+        db.session.add(r)
+
+        for c in cart.values():
+            d = ReceiptDetails(quantity=c['quantity'], price=c['price'],
+                               receipt=r, product_id=c['id'])
+            db.session.add(d)
+
+        db.session.commit()

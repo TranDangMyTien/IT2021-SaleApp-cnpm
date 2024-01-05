@@ -39,6 +39,57 @@ def details(id):
     # Trả về dạng html
     return render_template('details.html')
 
+# Trang đăng nhập
+# get : truy cập vào trang
+# post : để submit
+@app.route("/login", methods=['get', 'post'])
+def login_user_process():
+    if request.method.__eq__('POST'):
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user = dao.auth_user(username=username, password=password)
+        if user:
+            login_user(user=user)
+        # args : lấy tham số trên URL (lấy 'next')
+        next = request.args.get('next')
+        # Nếu như trên URL không có 'next' thì trả vè '/' (trang chủ)
+        return redirect("/" if next is None else next)
+    return render_template('login.html')
+
+# Trang đăng xuất
+@app.route('/logout')
+def process_logout_user():
+    logout_user()
+    # Đăng xuất xong thì về trang đăng nhập
+    return redirect("/login")
+
+
+# Trang đăng ký
+@app.route('/register', methods=['get', 'post'])
+def register_user():
+    err_msg = ""
+    if request.method.__eq__('POST'):
+        password = request.form.get('password')
+        confirm = request.form.get('confirm')
+
+        if password.__eq__(confirm):
+            try:
+                # Tập tin gửi lên đều nằm trong request.files
+                dao.add_user(name=request.form.get('name'),
+                             username=request.form.get('username'),
+                             password=password,
+                             avatar=request.files.get('avatar'))
+            except:
+                err_msg = 'Hệ thống đang bị lỗi!'
+            else:
+                return redirect('/login')
+        else:
+            err_msg = 'Mật khẩu KHÔNG khớp!'
+
+    return render_template('register.html', err_msg=err_msg)
+
+
 
 @app.route('/admin/login', methods=['post'])
 def login_admin_process():
@@ -125,6 +176,17 @@ def delete_cart(product_id):
     # Cập nhật lại giỏi hàng
     session['cart'] = cart
     return jsonify(utils.count_cart(cart))
+
+# Hàm thanh toán
+@app.route('/api/pay', methods=['post'])
+def pay():
+    try:
+        dao.add_receipt(session.get('cart'))
+    except:
+        return jsonify({'status': 500, 'err_msg': 'Hệ thống đang có lỗi!'})
+    else:
+        del session['cart']
+        return jsonify({'status': 200})
 
 
 

@@ -25,7 +25,7 @@
 <!--        Cột tên sản phẩm -->
         <td>{{ c.name }}</td>
 <!--        Cột giá sản phẩm -->
-        <td>{{ c.price}} VNĐ</td>
+        <td>{{ "{:,.0f}".format(c.price) }} VNĐ</td>
 <!--        Cột số lượng sản phẩm -->
         <td>
 <!--            Cho chỉnh sủa số lượng bằng thẻ input -->
@@ -33,7 +33,7 @@
         </td>
 <!--        Cột xóa sản phẩm -->
         <td>
-            <button class="btn btn-danger">&times;</button>
+            <button class="btn btn-danger" onclick="deleteCart({{c.id}}, this)">&times;</button>
         </td>
     </tr>
     {% endfor %}
@@ -45,8 +45,21 @@
     <h3>Tổng sản phẩm: <span class="cart-counter">{{ cart.total_quantity }}</span></h3>
 </div>
 
-
-
+<!--Nút thanh toán -->
+<div>
+<!--    Khi nào đăng nhập thì mới hiện nút thanh toán-->
+    {% if current_user.is_authenticated %}
+<!--    Khi click vào Nút thanh toán thì hàm pay bên cart.js sẽ thực thi -->
+    <button class="btn btn-success" onclick="pay()">Thanh toán</button>
+    {% else %}
+<!--    Đăng nhập thành công thì ở lại trang đăng nhập thay vì log về trang chủ (nhờ ?next=/cart)-->
+    <p>Vui lòng <a href="/login?next=/cart">đăng nhập</a> để thanh toán!</p>
+    {% endif %}
+</div>
+{% else %}
+<div class="alert alert-info mt-1">
+    Không có sản phẩm nào trong giỏ!
+</div>
 
 {% endif %}
 {% endblock %}
