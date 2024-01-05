@@ -9,6 +9,68 @@
 {% if current_user.is_authenticated %}
 <h1 class="text-success text-center">CHÀO MỪNG ĐẾN TRANG QUẢN TRỊ!</h1>
 <h2>Chào {{current_user.name}}!</h2>
+
+<!--Phần vẽ-->
+<div class="row">
+    <div class="col-md-5">
+        <table class="table">
+            <tr>
+                <th>Id</th>
+                <th>Danh mục</th>
+                <th>Số lượng</th>
+            </tr>
+            {% for s in stats %}
+            <tr>
+                <td>{{s[0]}}</td>
+                <td>{{s[1]}}</td>
+                <td>{{s[2]}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="col-md-7">
+         <canvas id="myChart"></canvas>
+    </div>
+</div>
+
+<!--Đường dẫn để import chart.js-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    let data = [];
+    let labels = [];
+
+    {% for c in stats %}
+<!--    Số lượng phần tử trong 1 đơn vị c trong vòng lập-->
+    data.push({{c[2]}})
+<!--    Số lượng tên-->
+    labels.push('{{c[3]}}')
+    {% endfor %}
+
+    window.onload = function() {
+    const ctx = document.getElementById('myChart');
+
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '# Số lượng',
+            data: data,
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+</script>
+
 {% else %}
 <h1 class="text-center text-info">ĐĂNG NHẬP QUẢN TRỊ </h1>
 <form method="post" action="/admin/login">

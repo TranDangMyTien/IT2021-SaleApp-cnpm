@@ -7,10 +7,10 @@ from flask import redirect, request
 from app.models import UserRoleEnum
 
 
-# class MyAdminIndex(AdminIndexView):
-#     @expose('/')
-#     def index(self):
-#         return self.render('admin/index.html', stats=dao.count_products_by_cate())
+class MyAdminIndex(AdminIndexView):
+    @expose('/')
+    def index(self):
+        return self.render('admin/index.html', stats=dao.count_products_by_cate())
 
 # Tạo lớp chứng thực tài khoản thì mới thấy tab nào đó
 class AuthenticatedUser(BaseView):
@@ -57,10 +57,13 @@ class MyCategoryView(AuthenticatedAdmin):
 
 
 # Tab thống kê báo cáo
-class MyStatsView(AuthenticatedManager):
+class MyStatsView(AuthenticatedUser):
     @expose("/")
     def index(self):
-        return self.render('admin/stats.html')
+        kw = request.args.get("kw")
+        return self.render('admin/stats.html',
+                           stats=dao.revenue_stats(kw),
+                           month_stats=dao.revenue_stats_by_month())
 
 
 # Tab đăng xuất
@@ -71,7 +74,7 @@ class MyLogoutView(AuthenticatedUser):
         return redirect('/admin')
 
 # Tạo trang admin có tên là Home-QUẢN TRỊ BÁN HÀNG (Dùng bootstrap4: thư viện hỗ trợ sẵn)
-admin = Admin(app=app, name="QUẢN TRỊ BÁN HÀNG", template_mode='bootstrap4')
+admin = Admin(app=app, name="QUẢN TRỊ BÁN HÀNG", template_mode='bootstrap4', index_view=MyAdminIndex())
 admin.add_view(MyCategoryView(Category, db.session))
 admin.add_view(MyProductView(Product, db.session))
 admin.add_view(MyStatsView(name='Thông kê báo cáo'))

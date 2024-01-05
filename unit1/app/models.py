@@ -21,6 +21,8 @@ class User(db.Model, UserMixin):
     # Mặc định là tài khoản của khách hàng
     user_role = Column(Enum(UserRoleEnum), default=UserRoleEnum.USER)
     receipts = relationship('Receipt', backref='user', lazy=True)
+    comments = relationship('Comment', backref='user', lazy=True)
+
     def __str__(self):
         return self.name
 
@@ -48,7 +50,10 @@ class Product(db.Model):
                                         "/hclq65mc6so7vdrbp7hz.jpg")
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
     receipt_details = relationship('ReceiptDetails', backref='product', lazy=True)
-
+    comments = relationship('Comment', backref='product', lazy=True)
+    # Một thuộc tính có 2 khóa ngoại thì backref phải khác tên
+    def __str__(self):
+        return self.name
 
 # Tạo model chung
 class BaseModel(db.Model):
@@ -71,6 +76,21 @@ class ReceiptDetails(BaseModel):
     price = Column(Float, default=0)
     receipt_id = Column(Integer, ForeignKey(Receipt.id), nullable=False)
     product_id = Column(Integer, ForeignKey(Product.id), nullable=False)
+
+
+# Tương tác, bình luận trên sản phẩm nào
+class Interaction(BaseModel):
+    # Không tạo table nên cho trừ tượng
+    __abstract__ = True
+    # Bình luận trên sản phẩm nào
+    product_id = Column(Integer, ForeignKey(Product.id), nullable=False)
+    # Ai là người bình luận
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
+
+class Comment(Interaction):
+    content = Column(String(255), nullable=False)
+    created_date = Column(DateTime, default=datetime.now())
+
 
 
 if __name__ == "__main__":

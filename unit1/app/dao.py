@@ -69,3 +69,37 @@ def add_receipt(cart):
             db.session.add(d)
 
         db.session.commit()
+
+# Hàm đếm sồ Product có trong 1 Category
+# Như là câu truy vấn mySQL
+def count_products_by_cate():
+    return db.session.query(Category.id, Category.name, func.count(Product.id))\
+                     .join(Product, Product.category_id == Category.id, isouter=True).group_by(Category.id).all()
+# isouter = True chỉ rằng đây là liên kết left outer join
+# sẽ trả về tất cả các hàng từ bản bên trái (bảng chính: Category)
+
+# Thống kê doanh thu
+def revenue_stats(kw=None):
+    query = db.session.query(Product.id, Product.name, func.sum(ReceiptDetails.price*ReceiptDetails.quantity))\
+                     .join(ReceiptDetails, ReceiptDetails.product_id == Product.id).group_by(Product.id)
+    if kw:
+        query = query.filter(Product.name.contains(kw))
+
+    return query
+
+
+# Thống kê doanh thu theo tháng
+def revenue_stats_by_month(year=2024):
+    return db.session.query(func.extract('month', Receipt.created_date),
+                            func.sum(ReceiptDetails.price*ReceiptDetails.quantity))\
+                        .join(ReceiptDetails, ReceiptDetails.receipt_id == Receipt.id)\
+                        .filter(func.extract('year', Receipt.created_date) == year)\
+                        .group_by(func.extract('month', Receipt.created_date)).all()
+
+
+
+if __name__ == '__main__':
+    with app.app_context():
+        print(count_products_by_cate())
+
+
