@@ -1,7 +1,9 @@
 # Phần Controller trong mô hình
 import math
 from flask import render_template, request, redirect, session, jsonify
-import dao
+# Đối tượng session nằm trên server lưu tạm giỏi hàng (không cần lưu trong database)
+import dao, utils
+# dao: truy vấn databasse, utils thực hiện các chức năng tiện ích
 from app import app, login
 from flask_login import login_user, logout_user, login_required
 
@@ -31,6 +33,11 @@ def index():
     # math.ceil là hàm làm tròn lên : 1,2 -> 2
 
 
+# Trang chi tiết sản phẩm
+@app.route('/products/<id>')
+def details(id):
+    # Trả về dạng html
+    return render_template('details.html')
 
 
 @app.route('/admin/login', methods=['post'])
@@ -46,6 +53,99 @@ def login_admin_process():
     return redirect('/admin')
 
 
+# Phần giỏ hàng
+# Bắt đầu bằng api là gọi bằng jsonify
+@app.route('/api/cart', methods=['post'])
+def add_cart():
+    """
+    {
+    "cart": {
+            "1": {
+                "id": 1,
+                "name": "ABC",
+                "price": 12,
+                "quantity": 2
+            }, "2": {
+                "id": 2,
+                "name": "ABC",
+                "price": 12,
+                "quantity": 2
+            }
+        }
+    }
+    :return:
+    """
+    # Biến 'cart' là mình tự đặt
+    cart = session.get('cart')
+    if cart is None:
+        cart = {}
+
+    data = request.json
+    id = str(data.get("id"))
+
+    if id in cart: # san pham da co trong gio
+        cart[id]["quantity"] = cart[id]["quantity"] + 1
+    else: # san pham chua co trong gio
+        cart[id] = {
+            "id": id,
+            "name": data.get("name"),
+            "price": data.get("price"),
+            # Thêm biến quantity (số lượng)
+            "quantity": 1
+        }
+    # Cập nhật lại giỏ hàng
+    session['cart'] = cart
+    return jsonify(utils.count_cart(cart))
+
+# Cập nhật số lượng
+# api đánh dấu hàm gọi bằng js
+# methods = put : để cập nhật
+@app.route("/api/cart/<product_id>", methods=['put'])
+def update_cart(product_id):
+    cart = session.get('cart')
+    # Kiểm tra có giỏ hàng chưa và kiểm tra sản phẩm có trong giỏi chưa
+    if cart and product_id in cart:
+        # Lấy số lượng ra (số lượng mua sản phẩm)
+        quantity = request.json.get('quantity')
+        # Khi nó gửi lên là chuỗi thì bây giờ xử lý phải đưa về số
+        cart[product_id]['quantity'] = int(quantity)
+
+    # Cập nhật lại giỏ hàng
+    session['cart'] = cart
+    return jsonify(utils.count_cart(cart))
+
+
+# Xóa sản phẩm
+@app.route("/api/cart/<product_id>", methods=['delete'])
+def delete_cart(product_id):
+    cart = session.get('cart')
+    if cart and product_id in cart:
+        del cart[product_id]
+
+    # Cập nhật lại giỏi hàng
+    session['cart'] = cart
+    return jsonify(utils.count_cart(cart))
+
+
+
+
+# Trang giỏi hàng
+@app.route('/cart')
+# Danh sách các phần tử trong giỏi
+def cart_list():
+    return render_template('cart.html')
+
+
+# Hàm trả chung (trên thanh menu đều có dù ở / (trang nào))
+@app.context_processor
+def common_resp():
+    return {
+        'categories': dao.load_categories(),
+        # Đưa thông tin giỏi hàng từ bàn đầu, không cần click thêm mới hiện
+        'cart': utils.count_cart(session.get('cart'))
+    }
+
+
 @login.user_loader
 def load_user(user_id):
     return dao.get_user_by_id(user_id)
@@ -58,3 +158,34 @@ def load_user(user_id):
 if __name__ == '__main__':
     from app import admin
     app.run(debug=True) #Có báo lỗi sẽ xuất ra
+
+
+
+
+
+
+
+
+
+
+# render_template được sử dụng để hiển thị nội dung trang web,
+# trong khi redirect được sử dụng để chuyển hướng người dùng sang một đường dẫn khác.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

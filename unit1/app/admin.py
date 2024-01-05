@@ -70,7 +70,7 @@ class MyLogoutView(AuthenticatedUser):
         logout_user()
         return redirect('/admin')
 
-
+# Tạo trang admin có tên là Home-QUẢN TRỊ BÁN HÀNG (Dùng bootstrap4: thư viện hỗ trợ sẵn)
 admin = Admin(app=app, name="QUẢN TRỊ BÁN HÀNG", template_mode='bootstrap4')
 admin.add_view(MyCategoryView(Category, db.session))
 admin.add_view(MyProductView(Product, db.session))

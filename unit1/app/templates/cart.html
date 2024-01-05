@@ -1,0 +1,57 @@
+{% extends 'layout/base.html' %}
+
+<!--Tiêu đề trang-->
+{% block title %}Giỏi hàng{% endblock %}
+
+<!--Phần nội dung cuả trang-->
+{% block content %}
+<!--Kiểm tra giỏi có trong session không-->
+<!--Đối tượng session nằm trên server lưu tạm giỏi hàng (không cần lưu trong database)-->
+{% if 'cart' in session %}
+<h1 class="text-center text-info mt-1">GIỎ HÀNG</h1>
+<table class="table">
+    <tr>
+        <th>Id</th>
+        <th>Tên sản phẩm</th>
+        <th>Đơn giá</th>
+        <th>Số lượng</th>
+        <!--   Cột trống dùng để xóa     -->
+        <th></th>
+    </tr>
+    {% for c in session['cart'].values() %}
+    <tr id="product{{c.id}}">
+<!--        Cột mã sản phẩm -->
+        <td>{{ c.id }}</td>
+<!--        Cột tên sản phẩm -->
+        <td>{{ c.name }}</td>
+<!--        Cột giá sản phẩm -->
+        <td>{{ c.price}} VNĐ</td>
+<!--        Cột số lượng sản phẩm -->
+        <td>
+<!--            Cho chỉnh sủa số lượng bằng thẻ input -->
+            <input type="number" onblur="updateCart({{c.id}},this)" value="{{ c.quantity }}" class="form-control"/>
+        </td>
+<!--        Cột xóa sản phẩm -->
+        <td>
+            <button class="btn btn-danger">&times;</button>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<!--Phần thông báo-->
+<div class="alert alert-info">
+    <h3>Tổng tiền: {{ "{:,.0f}".format(cart.total_amount) }} VNĐ</h3>
+    <h3>Tổng sản phẩm: <span class="cart-counter">{{ cart.total_quantity }}</span></h3>
+</div>
+
+
+
+
+{% endif %}
+{% endblock %}
+
+
+<!--<tr>: table row, dòng của bảng-->
+<!--<th>: table header cell, ô tiêu đề của bảng -->
+<!--<td>: table data, ô dữ liệu của bảng-->

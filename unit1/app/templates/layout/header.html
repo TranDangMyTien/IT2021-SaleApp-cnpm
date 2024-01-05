@@ -11,12 +11,14 @@
                         <a class="nav-link" href="/">Trang chủ</a>
                     </li>
                     {% for c in categories %} <!-- Dùng vòng lập for để lấy giá trị -->
-                        <li class="nav-item">
+                        <li c lass="nav-item">
                             <!-- Khi nhấn vào những tab trên menu thì nó sẽ tạo cate_id    -->
                             <a class="nav-link" href="/?cate_id={{c.id}}">{{ c.name }}</a>
                         </li>
                     {% endfor %} <!--  Dòng lệnh kết thúc vòng lập -->
-
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="/cart">Giỏ hàng &#128722; <span class="badge bg-danger cart-counter">{{ cart.total_quantity}}</span></a>
+                    </li>
                 </ul>
                 <form class="d-flex" method="get" action="/"> <!--action: chỉ định vị trí server gửi lên -->
                     <input class="form-control me-2" type="text" name="kw" placeholder="Nhập từ khóa...">

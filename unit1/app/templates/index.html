@@ -1,5 +1,8 @@
 {% extends 'layout/base.html' %}
 
+<!--Nếu không có nội dung khác định nghĩa thì "Trang chủ" sẽ được dùng làm tiêu đề -->
+<!--Tiêu đề trang-->
+{% block title %}Trang chủ{% endblock %}
 
 {% block content %}
 <section class="container">
@@ -18,7 +21,7 @@
                     <h4 class="card-title">{{p.name}}</h4>
                     <p class="card-text">{{p.price}} VND</p>
                     <a href="/products/{{p.id}}" class="btn btn-primary">Xem chi tiết</a>
-                    <a href="#" class="btn btn-primary">Đặt hàng</a>
+                    <a href="#" class="btn btn-danger" onclick="addToCart({{p.id}}, '{{p.name}}', {{p.price}})" >Đặt hàng</a>
 
                 </div>
             </div>
@@ -26,4 +29,6 @@
         {% endfor %}
     </div>
 </section>
+
+
 {% endblock %}
