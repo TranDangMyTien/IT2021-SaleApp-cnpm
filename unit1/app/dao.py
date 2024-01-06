@@ -1,4 +1,4 @@
-from app.models import Category, Product, User, Receipt, ReceiptDetails
+from app.models import Category, Product, User, Receipt, ReceiptDetails, Comment
 from app import app, db
 import hashlib
 import cloudinary.uploader
@@ -97,6 +97,23 @@ def revenue_stats_by_month(year=2024):
                         .group_by(func.extract('month', Receipt.created_date)).all()
 
 
+# Lấy comment của 1 sản phẩm
+def get_comments_by_prod_id(id):
+    return Comment.query.filter(Comment.product_id.__eq__(id)).all()
+
+# Thêm comment
+def add_comment(product_id, content):
+    c = Comment(user=current_user, product_id=product_id, content=content)
+    db.session.add(c)
+    db.session.commit()
+
+    return c
+
+
+
+# Lấy id của sản phẩm
+def get_product_by_id(id):
+    return Product.query.get(id)
 
 if __name__ == '__main__':
     with app.app_context():

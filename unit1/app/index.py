@@ -37,7 +37,23 @@ def index():
 @app.route('/products/<id>')
 def details(id):
     # Trả về dạng html
-    return render_template('details.html')
+    comments = dao.get_comments_by_prod_id(id)
+    return render_template('details.html', product=dao.get_product_by_id(id), comments=comments)
+
+# Thêm bình luận
+@app.route("/api/products/<id>/comments", methods=['post'])
+@login_required
+def add_comment(id):
+    content = request.json.get('content')
+
+    try:
+        c = dao.add_comment(product_id=id, content=content)
+    except:
+        return jsonify({'status': 500, 'err_msg': 'Hệ thống đang có lỗi!'})
+    else:
+
+        return jsonify({'status': 200, "c": {'content': c.content, "user": {"avatar": c.user.avatar}}})
+
 
 # Trang đăng nhập
 # get : truy cập vào trang

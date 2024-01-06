@@ -46,8 +46,7 @@ class Product(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)
     price = Column(Float, default=0)
-    image = Column(String(200), default="https://res.cloudinary.com/dxxwcby8l/image/upload/v1688179242"
-                                        "/hclq65mc6so7vdrbp7hz.jpg")
+    image = Column(String(200), default='https://images.pexels.com/photos/19140963/pexels-photo-19140963/free-photo-of-m-c-h-du-l-ch-n-c-d-c.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
     receipt_details = relationship('ReceiptDetails', backref='product', lazy=True)
     comments = relationship('Comment', backref='product', lazy=True)
