@@ -10,11 +10,11 @@
 
 <div class="row">
     <div class="col-md-5 col-xs-12">
-        <img src="{{product.image}}" class="img-fluid rounded" />
+        <img src="{{flightticket.image}}" class="img-fluid rounded" />
     </div>
     <div class="col-md-7 col-xs-12">
-        <h1>{{ product.name }}</h1>
-        <h3>{{ product.price }} VNĐ</h3>
+        <h1>{{ flightticket.name }}</h1>
+        <h3>{{ flightticket.price }} VNĐ</h3>
     </div>
 </div>
 
@@ -22,10 +22,10 @@
 {% if current_user.is_authenticated %}
 <div class="form-group">
     <textarea class="form-control" rows="5" id="comment" name="text" placeholder="Nội dung bình luận"></textarea>
-    <input type="button" onclick="addComment({{product.id}})" value="Bình luận" class="btn btn-success mt-1" />
+    <input type="button" onclick="addComment({{flightticket.id}})" value="Bình luận" class="btn btn-success mt-1" />
 </div>
 {% else %}
-<p>Vui lòng <a href="/login?next=/products/{{product.id}}">đăng nhập</a> để bình luận!</p>
+<p>Vui lòng <a href="/login?next=/flighttickets/{{flightticket.id}}">đăng nhập</a> để bình luận!</p>
 {% endif %}
 
 <!--Phần comment-->
@@ -33,7 +33,7 @@
     {% for c in comments %}
     <div class="row alert alert-info">
         <div class="col-md-1">
-            <img src="{{c.user.avartar}}" class="img-fluid rounded" />
+            <img src="{{c.user.avatar}}" class="img-fluid rounded" />
         </div>
         <div class="col-md-11">
             <p>{{ c.content }}</p>

@@ -1,7 +1,7 @@
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import Admin, BaseView, expose, AdminIndexView
 from app import app, db, dao
-from app.models import Category, Product
+from app.models import Flight, FlightTicket
 from flask_login import logout_user, current_user
 from flask import redirect, request
 from app.models import UserRoleEnum
@@ -10,7 +10,7 @@ from app.models import UserRoleEnum
 class MyAdminIndex(AdminIndexView):
     @expose('/')
     def index(self):
-        return self.render('admin/index.html', stats=dao.count_products_by_cate())
+        return self.render('admin/index.html', stats=dao.count_flighttickets_by_cate())
 
 # Tạo lớp chứng thực tài khoản thì mới thấy tab nào đó
 class AuthenticatedUser(BaseView):
@@ -20,16 +20,16 @@ class AuthenticatedUser(BaseView):
 # Tạo lớp chứng thực cho kiểu Model, và nó là role Admin
 class AuthenticatedAdmin(ModelView):
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.EMPLOYEE
 
 class AuthenticatedManager(BaseView):
     def is_accessible(self):
-        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.MANAGER
+        return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
 
 
-# MyProductView kế thừa lại ModelView
-class MyProductView(AuthenticatedAdmin):
-    # Tab Product (trong trang admin) : chỉ hiện những cột dưới
+# MyFlightTicketView kế thừa lại ModelView
+class MyFlightTicketView(AuthenticatedAdmin):
+    # Tab FlightTicket (trong trang admin) : chỉ hiện những cột dưới
     column_list = ['id', 'name', 'price']
     # Tìm kiếm theo name
     column_searchable_list = ['name']
@@ -40,13 +40,13 @@ class MyProductView(AuthenticatedAdmin):
     # Xuất ra file .csv
     can_export = True
 
-    # Chứng thực, đăng nhập thì mới hiện trang product
+    # Chứng thực, đăng nhập thì mới hiện trang FlightTicket
     # def is_accessible(self):
     #     return current_user.is_authenticated
 
-# Tab Category
-class MyCategoryView(AuthenticatedAdmin):
-    column_list =['name', 'products']
+# Tab Flight
+class MyFlightView(AuthenticatedAdmin):
+    column_list = ['name', 'flighttickets']
 
 
 
@@ -75,7 +75,7 @@ class MyLogoutView(AuthenticatedUser):
 
 # Tạo trang admin có tên là Home-QUẢN TRỊ BÁN HÀNG (Dùng bootstrap4: thư viện hỗ trợ sẵn)
 admin = Admin(app=app, name="QUẢN TRỊ BÁN HÀNG", template_mode='bootstrap4', index_view=MyAdminIndex())
-admin.add_view(MyCategoryView(Category, db.session))
-admin.add_view(MyProductView(Product, db.session))
+admin.add_view(MyFlightView(Flight, db.session))
+admin.add_view(MyFlightTicketView(FlightTicket, db.session))
 admin.add_view(MyStatsView(name='Thông kê báo cáo'))
 admin.add_view(MyLogoutView(name='Đăng xuất'))

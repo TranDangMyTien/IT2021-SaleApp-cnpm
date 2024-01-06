@@ -57,7 +57,7 @@ function deleteCart(id, obj) {
             for (let d of c)
                 d.innerText = data.total_quantity
 
-            let r = document.getElementById(`product${id}`);
+            let r = document.getElementById(`flightticket${id}`);
 //            Ẩn đi những cái đã xóa trong trang giỏi hàng
             r.style.display = "none";
         });
@@ -82,9 +82,9 @@ function pay() {
 
 
 //Hàm thêm comment
-function addComment(productId) {
+function addComment(flightticketId) {
     if (confirm("Bạn chắc chắn bình luận?") == true) {
-        fetch(`/api/products/${productId}/comments`, {
+        fetch(`/api/flighttickets/${flightticketId}/comments`, {
             method: "post",
             body: JSON.stringify({
                 "content": document.getElementById("comment").value

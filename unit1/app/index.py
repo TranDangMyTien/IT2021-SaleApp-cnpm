@@ -17,37 +17,37 @@ def index():
     #Lấy giá trị của tham số được truyền trong URL
     #Qua phần layout/header để xem cách lấy trong URL
     kw = request.args.get('kw')
-    cate_id = request.args.get('cate_id')
+    flight_id = request.args.get('flight_id')
     page = request.args.get("page")
 
-    cates = dao.load_categories() #Gọi hàm bên modul khác
-    products = dao.load_products(kw=kw, cate_id=cate_id, page=page)
+    flights = dao.load_flights() #Gọi hàm bên modul khác
+    flighttickets = dao.load_flighttickets(kw=kw, flight_id=flight_id, page=page)
     # Số lượng sản phẩm trong data
-    total = dao.count_product()
+    total = dao.count_flightticket()
 
     # Gửi thông tin ra ngoài (gửi lên web)
-    return render_template('index.html',categories = cates,
-                           products=products,
+    return render_template('index.html', flights=flights,
+                           flighttickets=flighttickets,
                            pages=math.ceil(total / app.config['PAGE_SIZE']))
     #categories là tên biến, cates là giá trị gửi ra
     # math.ceil là hàm làm tròn lên : 1,2 -> 2
 
 
 # Trang chi tiết sản phẩm
-@app.route('/products/<id>')
+@app.route('/flighttickets/<id>')
 def details(id):
     # Trả về dạng html
     comments = dao.get_comments_by_prod_id(id)
-    return render_template('details.html', product=dao.get_product_by_id(id), comments=comments)
+    return render_template('details.html', flightticket=dao.get_flightticket_by_id(id), comments=comments)
 
 # Thêm bình luận
-@app.route("/api/products/<id>/comments", methods=['post'])
+@app.route("/api/flighttickets/<id>/comments", methods=['post'])
 @login_required
 def add_comment(id):
     content = request.json.get('content')
 
     try:
-        c = dao.add_comment(product_id=id, content=content)
+        c = dao.add_comment(flightticket_id=id, content=content)
     except:
         return jsonify({'status': 500, 'err_msg': 'Hệ thống đang có lỗi!'})
     else:
@@ -167,15 +167,15 @@ def add_cart():
 # Cập nhật số lượng
 # api đánh dấu hàm gọi bằng js
 # methods = put : để cập nhật
-@app.route("/api/cart/<product_id>", methods=['put'])
-def update_cart(product_id):
+@app.route("/api/cart/<flightticket_id>", methods=['put'])
+def update_cart(flightticket_id):
     cart = session.get('cart')
     # Kiểm tra có giỏ hàng chưa và kiểm tra sản phẩm có trong giỏi chưa
-    if cart and product_id in cart:
+    if cart and flightticket_id in cart:
         # Lấy số lượng ra (số lượng mua sản phẩm)
         quantity = request.json.get('quantity')
         # Khi nó gửi lên là chuỗi thì bây giờ xử lý phải đưa về số
-        cart[product_id]['quantity'] = int(quantity)
+        cart[flightticket_id]['quantity'] = int(quantity)
 
     # Cập nhật lại giỏ hàng
     session['cart'] = cart
@@ -183,11 +183,11 @@ def update_cart(product_id):
 
 
 # Xóa sản phẩm
-@app.route("/api/cart/<product_id>", methods=['delete'])
-def delete_cart(product_id):
+@app.route("/api/cart/<flightticket_id>", methods=['delete'])
+def delete_cart(flightticket_id):
     cart = session.get('cart')
-    if cart and product_id in cart:
-        del cart[product_id]
+    if cart and flightticket_id in cart:
+        del cart[flightticket_id]
 
     # Cập nhật lại giỏi hàng
     session['cart'] = cart
@@ -218,7 +218,7 @@ def cart_list():
 @app.context_processor
 def common_resp():
     return {
-        'categories': dao.load_categories(),
+        'flights': dao.load_flights(),
         # Đưa thông tin giỏi hàng từ bàn đầu, không cần click thêm mới hiện
         'cart': utils.count_cart(session.get('cart'))
     }

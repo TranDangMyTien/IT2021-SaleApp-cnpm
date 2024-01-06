@@ -1,7 +1,7 @@
 <nav>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">BÁN HÀNG TRỰC TUYẾN</a>
+            <a class="navbar-brand" href="/">QUẢN LÝ CHUYẾN BAY</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -19,7 +19,7 @@
                     {% if current_user.is_authenticated %}s
                         <li class="nav-item">
                             <a class="nav-link text-info" href="/">
-                                <img src="{{current_user.avartar}}" style="width:25px" class="rounded" /> Chào {{current_user.username}}!
+                                <img src="{{current_user.avatar}}" style="width:25px" class="rounded" /> Chào {{current_user.username}}!
                             </a>
                         </li>
                         <li class="nav-item">

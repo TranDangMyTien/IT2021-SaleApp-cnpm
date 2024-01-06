@@ -8,7 +8,7 @@ from flask_login import LoginManager
 #Biến __name__ là một biến đặc biệt trong Python và đại diện cho tên của module hiện tại.
 app = Flask(__name__)
 app.secret_key = 'jaoiuas8902BILbkjb###AKHBK'
-app.config["SQLALCHEMY_DATABASE_URI"] ="mysql+pymysql://root:m1234567890@localhost/saledbv1?charset=utf8mb4"
+app.config["SQLALCHEMY_DATABASE_URI"] ="mysql+pymysql://root:m1234567890@localhost/cnpm1?charset=utf8mb4"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 #Cấu hình 1 trang có 6 sản phẩm
 app.config["PAGE_SIZE"] = 6
