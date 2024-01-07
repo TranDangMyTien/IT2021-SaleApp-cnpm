@@ -72,9 +72,18 @@ def add_receipt(cart):
 
 # Hàm đếm sồ FlightTicket có trong 1 Flight
 # Như là câu truy vấn mySQL
-def count_flighttickets_by_cate():
-    return db.session.query(Flight.id, Flight.name, func.count(FlightTicket.id))\
-                     .join(FlightTicket, FlightTicket.flight_id == Flight.id, isouter=True).group_by(Flight.id).all()
+def count_flighttickets_by_flight():
+    # return db.session.query(Flight.id, Flight.name, func.count(FlightTicket.id))\
+    #                  .join(FlightTicket, FlightTicket.flight_id == Flight.id, isouter=True).group_by(Flight.id).all()
+    # return db.session.query(Flight.id, func.count(FlightTicket.id).outerjoin(FlightTicket, Flight.id==FlightTicket.flight_id).group_by(Flight.id)).all()
+    return (
+        db.session.query(Flight.id, Flight.name, func.count(FlightTicket.id).label('ticket_count'))
+        .join(FlightTicket, FlightTicket.flight_id == Flight.id, isouter=True)
+        .group_by(Flight.id, Flight.name)  # Gọi group_by trên đối tượng truy vấn, không phải trên Join
+        .all()
+    )
+
+
 # isouter = True chỉ rằng đây là liên kết left outer join
 # sẽ trả về tất cả các hàng từ bản bên trái (bảng chính: Flight)
 
@@ -117,6 +126,6 @@ def get_flightticket_by_id(id):
 
 if __name__ == '__main__':
     with app.app_context():
-        print(count_flighttickets_by_cate())
+        print(count_flighttickets_by_flight())
 
 

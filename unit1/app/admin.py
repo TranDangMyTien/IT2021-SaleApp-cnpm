@@ -10,7 +10,7 @@ from app.models import UserRoleEnum
 class MyAdminIndex(AdminIndexView):
     @expose('/')
     def index(self):
-        return self.render('admin/index.html', stats=dao.count_flighttickets_by_cate())
+        return self.render('admin/index.html', stats=dao.count_flighttickets_by_flight())
 
 # Tạo lớp chứng thực tài khoản thì mới thấy tab nào đó
 class AuthenticatedUser(BaseView):
@@ -52,10 +52,6 @@ class MyFlightView(AuthenticatedAdmin):
 
 
 
-
-
-
-
 # Tab thống kê báo cáo
 class MyStatsView(AuthenticatedUser):
     @expose("/")
@@ -75,7 +71,11 @@ class MyLogoutView(AuthenticatedUser):
 
 # Tạo trang admin có tên là Home-QUẢN TRỊ BÁN HÀNG (Dùng bootstrap4: thư viện hỗ trợ sẵn)
 admin = Admin(app=app, name="QUẢN TRỊ BÁN HÀNG", template_mode='bootstrap4', index_view=MyAdminIndex())
+
 admin.add_view(MyFlightView(Flight, db.session))
+
 admin.add_view(MyFlightTicketView(FlightTicket, db.session))
+
 admin.add_view(MyStatsView(name='Thông kê báo cáo'))
+
 admin.add_view(MyLogoutView(name='Đăng xuất'))

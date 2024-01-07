@@ -105,7 +105,10 @@ def register_user():
 
     return render_template('register.html', err_msg=err_msg)
 
-
+# # Trang admin
+# @app.route('/admin')
+# def login_admin():
+#     return render_template('/index.html')
 
 @app.route('/admin/login', methods=['post'])
 def login_admin_process():
