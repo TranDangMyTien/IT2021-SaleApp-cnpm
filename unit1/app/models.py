@@ -57,7 +57,7 @@ class Customer(db.Model):
 
     # Phần relationship
     # account = relationship("Account", back_populates="customer")
-    flight_ticket = relationship('FlightTicket', backref='customer', lazy=True)
+    # flight_ticket = relationship('FlightTicket', backref='customer', lazy=True)
     receipts = relationship('Receipt', backref='customer', lazy=True)
 
 # Nhân viên
@@ -66,10 +66,10 @@ class Employee(db.Model):
 
     id_employee = Column(Integer, ForeignKey(Account.id), primary_key=True, autoincrement=True)
     name_employee = Column(String(50), nullable=False)
-    sdt_employee = Column(String(10), nullable=False)
+    sdt_employee = Column(String(10), nullable=False, unique=True )
 
     # account = relationship("Account", back_populates="employee")
-    flight_ticket = relationship("FlightTicket", uselist=False, backref="employee")
+    # flight_ticket = relationship("FlightTicket", uselist=False, backref="employee")
     schedule = relationship("Schedule", uselist=False, backref="employee")
     receipt = relationship('Receipt', backref='employee3', lazy=True)
 
@@ -83,21 +83,21 @@ class Admin(db.Model):
     regulation = relationship('Regulation', backref='admin', lazy=True)
     flight = relationship('Flight', backref='admin', lazy=True)
     route = relationship('Route', backref='admin', lazy=True)
-
+    revenue = relationship('Revenue', backref='admin', lazy=True)
 
 # Quy định
 class Regulation(db.Model):
     __tablename__ = 'regulation'
-    id = Column(Integer, primary_key=True, autoincrement=True )
-    airport_count = Column(Integer)
-    max_flight_time = Column(Integer)
-    min_flight_time = Column(Integer)
-    max_stopover_time = Column(Integer)
-    min_stopover_time = Column(Integer)
-    GiaVe = Column(Float)
-    SLVe = Column(Integer)
-    ticket_sales_time = Column(Integer)
-    ticket_booking_time = Column(Integer)
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False )
+    airport_count = Column(Integer, nullable=False)
+    max_flight_time = Column(Integer, nullable=False)
+    min_flight_time = Column(Integer, nullable=False)
+    max_stopover_time = Column(Integer, nullable=False)
+    min_stopover_time = Column(Integer, nullable=False)
+    GiaVe = Column(Float, nullable=False)
+    SLVe = Column(Integer, nullable=False)
+    ticket_sales_time = Column(Time, default=datetime.now(), nullable=False)
+    ticket_booking_time = Column(Time, default=datetime.now(), nullable=False)
     id_admin = Column(Integer, ForeignKey(Admin.id))
 
     flight = relationship("Flight", backref="regulation")
@@ -108,7 +108,7 @@ class Regulation(db.Model):
 class Schedule(db.Model):
     __tablename__ = 'schedule'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    datetime = Column(DateTime)
+    datetime = Column(DateTime, default=datetime.now(), nullable=False)
     employee_id = Column(Integer, ForeignKey(Employee.id_employee), nullable=False)
 
     flight = relationship('Flight', backref='schedule', lazy=True)
@@ -118,12 +118,15 @@ class Revenue(BaseModel):
     __tablename__ = 'revenue'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(50))
-    flight_count = Column(Integer)
-    rate = Column(Float)
-    revenue = Column(Float)
-    receipt = relationship("Receipt", backref="revenue")
+    name = Column(String(50), nullable=False)
+    flight_count = Column(Integer, nullable=False)
+    rate = Column(Float, nullable=False)
+    id_admin = Column(Integer, ForeignKey(Admin.id))
+    # revenue = Column(Float)
+    receipt_details = relationship("ReceiptDetails", backref="revenue")
     route = relationship("Route", backref="revenue")
+    flight = relationship("Flight", backref="revenue")
+
 
 # Chuyến bay
 class Flight(db.Model):
@@ -136,7 +139,7 @@ class Flight(db.Model):
     status = Column(String(50), nullable=False)
     SLVeHang1 = Column(Integer, nullable=False)
     SLVeHang2 = Column(Integer, nullable=False)
-    created_date = Column(DateTime, default=datetime.now())
+    created_date = Column(DateTime, default=datetime.now(), nullable=False)
 
     id_schedule = Column(Integer, ForeignKey(Schedule.id))
     id_regulation = Column(Integer, ForeignKey(Regulation.id))
@@ -160,8 +163,8 @@ class FlightTicket(db.Model):
     price = Column(Float, default=0)
     image = Column(String(200), default='https://cdn.icon-icons.com/icons2/3565/PNG/512/transport_travel_flight_airplane_ticket_plane_icon_225382.png')
     flight_id = Column(Integer, ForeignKey(Flight.id), nullable=False)
-    id_employee = Column(Integer, ForeignKey(Employee.id_employee), primary_key=True)
-    id_cus = Column(Integer, ForeignKey(Customer.id_customer), primary_key=True)
+    # id_employee = Column(Integer, ForeignKey(Employee.id_employee), primary_key=True)
+    # id_cus = Column(Integer, ForeignKey(Customer.id_customer), primary_key=True)
     id_regulation = Column(Integer, ForeignKey(Regulation.id))
 
     receipt_details = relationship('ReceiptDetails', backref='flightticket', lazy=True)
@@ -180,7 +183,6 @@ class Receipt(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
     id_cus = Column(Integer, ForeignKey(Customer.id_customer), primary_key=True, nullable=False)
     employee_id = Column(Integer, ForeignKey(Employee.id_employee), nullable=False)
-    revenue_id = Column(Integer, ForeignKey(Revenue.id), nullable=False)
     created_date = Column(DateTime, default=datetime.now())
     receipt_details = relationship('ReceiptDetails', backref='receipt', lazy=True)
 
@@ -189,23 +191,23 @@ class ReceiptDetails(db.Model):
     __tablename__ = 'receiptdetails'
     quantity = Column(Integer, default=0)
     price = Column(Float, default=0)
-
+    revenue_id = Column(Integer, ForeignKey(Revenue.id), nullable=False)
     receipt_id = Column(Integer, ForeignKey(Receipt.id), primary_key=True, nullable=False)
     flightticket_id = Column(Integer, ForeignKey(FlightTicket.id), nullable=False)
 
 
 class Airport(BaseModel):
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name_airport = Column(String(100))
+    name_airport = Column(String(100), nullable=False)
     route = relationship("Route", uselist=False, backref="airport")
 
 class Route(BaseModel):
     __tablename__ = 'route'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    departure_location = Column(String(50))
-    arrival_location = Column(String(50))
-    SLSBTrungGian = Column(Integer)
+    departure_location = Column(String(50), nullable=False)
+    arrival_location = Column(String(50), nullable=False)
+    SLSBTrungGian = Column(Integer, nullable=False)
     # departure_time = Column(Time)
     # arrival_time = Column(Time)
     id_regulation = Column(Integer, ForeignKey(Regulation.id))
@@ -236,48 +238,114 @@ class Comment(Interaction):
 if __name__ == "__main__":
     from app import app
     with app.app_context():
-        db.drop_all()
+        # db.drop_all()
         db.create_all()
-        # c1 = Category(name='Mobile')
-        # c2 = Category(name='Table')
-        # c3 = Category(name='Desktop')
-        # c4 = Category(name='Phu kien')
-        # db.session.add(c3)
-        # db.session.add(c4)
-        # db.session.add(c1)
-        # db.session.add(c2)
-        # db.session.commit()
 
-        # p1 = Product(name='iPad Pro 2022', price=24000000, category_id=2)
-        # p2 = Product(name='iPhone 14', price=25000000, category_id=1)
-        # p3 = Product(name='Galaxy S23', price=24000000, category_id=1)
-        # p4 = Product(name='Note 22', price=24000000, category_id=1)
-        # p5 = Product(name='Galaxy Tab S9', price=24000000, category_id=2)
-        # db.session.add_all([p1, p2, p3, p4, p5])
-        # db.session.commit()
-        #
-        #
-        #
         # import hashlib
-        # u = User(name='admin',
+        # u = Account(name='admin',
         #         username='admin',
         #         password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
         #         user_role=UserRoleEnum.ADMIN)
         # db.session.add(u)
-        # db.session.commit()
-
-        # u1 = User(name='manager',
-        #         username='manager',
-        #         password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #         user_role=UserRoleEnum.MANAGER)
-        #
+        # u1 = Account(name='user',
+        #             username='user1',
+        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #             user_role=UserRoleEnum.USER)
         # db.session.add(u1)
+        # u2 = Account(name='employee',
+        #             username='employee',
+        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #             user_role=UserRoleEnum.EMPLOYEE)
+        # db.session.add(u2)
+        # u3 = Account(name='KH2',
+        #             username='khachhang2',
+        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #             user_role=UserRoleEnum.USER)
+        # db.session.add(u3)
+        # u4 = Account(name='KH3',
+        #             username='khachhang3',
+        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #             user_role=UserRoleEnum.USER)
+        # db.session.add(u4)
+        # u5 = Account(name='admin',
+        #         username='admin1',
+        #         password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #         user_role=UserRoleEnum.ADMIN)
+        # db.session.add(u5)
+        # u6 = Account(name='employee',
+        #             username='employee1',
+        #             password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
+        #             user_role=UserRoleEnum.EMPLOYEE)
+        # db.session.add(u6)
         # db.session.commit()
 
-        # u2 = User(name='user1',
-        #         username='user1',
-        #         password=str(hashlib.md5('123456'.encode('utf-8')).hexdigest()),
-        #         user_role=UserRoleEnum.USER)
-        #
-        # db.session.add(u2)
+
+        # a = Admin(id=1,name='Emma')
+        # db.session.add(a)
+        # db.session.commit()
+        # a1 = Admin(id=6, name='Mie')
+        # db.session.add(a1)
+        # db.session.commit()
+
+        # c = Customer(id_customer=2, name_customer='Nhi', cccd='092303005600', sdt_customer='0395129019')
+        # c1 = Customer(id_customer=4, name_customer='Hien', cccd='092303005000', sdt_customer='0395129000')
+        # c2 = Customer(id_customer=5, name_customer='Yen', cccd='092303005555', sdt_customer='0395129111')
+        # db.session.add(c)
+        # db.session.add(c1)
+        # db.session.add(c2)
+        # db.session.commit()
+
+        # e = Employee(id_employee=3, name_employee='Linh', sdt_employee='0899484111')
+        # e1 = Employee(id_employee=7, name_employee='Nga', sdt_employee='0899484000')
+        # db.session.add(e)
+        # db.session.add(e1)
+        # db.session.commit()
+
+
+        # r = Revenue(name='Thang1', flight_count=20, rate={15/100}, id_admin=6 )
+        # r1 = Revenue(name='Thang2', flight_count=50, rate={19/100}, id_admin=6 )
+        # db.session.add(r)
+        # db.session.add(r1)
+        # db.session.commit()
+
+
+        # r = Regulation(id=1, airport_count=5, max_flight_time=5, min_flight_time=1, max_stopover_time=1, min_stopover_time=0, GiaVe=1000000, SLVe=1000, ticket_sales_time="8:30:00", ticket_booking_time="8:30:00", id_admin=1)
+        # r1 = Regulation(id=2, airport_count=10, max_flight_time=10, min_flight_time=1, max_stopover_time=1, min_stopover_time=0, GiaVe=800000, SLVe=1200, ticket_sales_time="8:30:00", ticket_booking_time="8:30:00", id_admin=6)
+        # db.session.add(r)
+        # db.session.add(r1)
+        # db.session.commit()
+
+
+        # s = Schedule(id=1, datetime="2024-02-07 12:30:00", employee_id=3)
+        # s1 = Schedule(id=2, datetime="2024-02-05 8:00:00", employee_id=3)
+        # db.session.add(s)
+        # db.session.add(s1)
+        # db.session.commit()
+
+        # c1 = Flight(name='HN-SG', status="proceed", SLVeHang1=50, SLVeHang2=10, created_date="2024-01-07 12:30:00", id_schedule=1, id_regulation=1, id_admin=1, id_revenue=1)
+        # c2 = Flight(name='HN-CT', status="waiting", SLVeHang1=100, SLVeHang2=30, created_date="2024-03-02 10:00:00", id_schedule=1, id_regulation=1, id_admin=1, id_revenue=1)
+        # c3 = Flight(name='HN-ST', status="cancel", SLVeHang1=100, SLVeHang2=100, created_date="2024-02-01 12:00:00", id_schedule=1, id_regulation=1, id_admin=1, id_revenue=1)
+        # c4 = Flight(name='CT-DL', status="cancel", SLVeHang1=100, SLVeHang2=30, created_date="2023-12-01 2:30:00", id_schedule=1, id_regulation=1, id_admin=1, id_revenue=1)
+        # c5 = Flight(name='CT-HN', status="waiting", SLVeHang1=60, SLVeHang2=30, created_date="2024-02-11 1:30:00", id_schedule=1, id_regulation=1, id_admin=1, id_revenue=1)
+        # c6 = Flight(name='CT-SG', status="waiting", SLVeHang1=60, SLVeHang2=20, created_date="2024-02-02 12:30:00", id_schedule=1, id_regulation=1, id_admin=1, id_revenue=1)
+        # db.session.add(c1)
+        # db.session.add(c2)
+        # db.session.add(c3)
+        # db.session.add(c4)
+        # db.session.add(c5)
+        # db.session.add(c6)
+        # db.session.commit()
+
+
+
+        # l = FlightTicket(id=1, name='HN-SG', price=2680000, image='https://images.pexels.com/photos/414110/pexels-photo-414110.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=1, id_regulation=1)
+        # l1 = FlightTicket(id=2, name='HN-CT', price=2000000, image='https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=2, id_regulation=1)
+        # l2 = FlightTicket(id=3, name='HN-CT', price=1500000, image='https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=2, id_regulation=1)
+        # l3 = FlightTicket(id=4, name='HN-ST', price=3500000, image='https://images.pexels.com/photos/1004665/pexels-photo-1004665.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=3, id_regulation=1)
+        # l4 = FlightTicket(id=5, name='CT-DL', price=2000000, image='https://images.pexels.com/photos/1470405/pexels-photo-1470405.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=4, id_regulation=1)
+        # db.session.add(l)
+        # db.session.add(l1)
+        # db.session.add(l2)
+        # db.session.add(l3)
+        # db.session.add(l4)
         # db.session.commit()

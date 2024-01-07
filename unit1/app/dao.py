@@ -10,8 +10,8 @@ def load_flights():
 
 
 # Hàm liệt kê các sản phẩm, tìm kiếm sản phẩm theo kw, tìm kiếm theo
-def load_flighttickets (kw, flight_id, page=None):
-    flighttickets = Flight.query
+def load_flighttickets(kw, flight_id, page=None):
+    flighttickets = FlightTicket.query
     if kw:
      flighttickets = flighttickets.filter(FlightTicket.name.contains(kw))
     if flight_id:

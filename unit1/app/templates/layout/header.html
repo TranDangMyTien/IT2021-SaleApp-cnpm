@@ -10,12 +10,12 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/">Trang chủ</a>
                     </li>
-                    {% for c in categories %} <!-- Dùng vòng lập for để lấy giá trị -->
-                        <li c lass="nav-item">
-                            <!-- Khi nhấn vào những tab trên menu thì nó sẽ tạo cate_id    -->
-                            <a class="nav-link" href="/?cate_id={{c.id}}">{{ c.name }}</a>
-                        </li>
-                    {% endfor %} <!--  Dòng lệnh kết thúc vòng lập -->
+<!--                    {% for c in flights %} &lt;!&ndash; Dùng vòng lập for để lấy giá trị &ndash;&gt;-->
+<!--                        <li c lass="nav-item">-->
+<!--                            &lt;!&ndash; Khi nhấn vào những tab trên menu thì nó sẽ tạo cate_id    &ndash;&gt;-->
+<!--                            <a class="nav-link" href="/?flight_id={{c.id}}">{{ c.name }}</a>-->
+<!--                        </li>-->
+<!--                    {% endfor %} &lt;!&ndash;  Dòng lệnh kết thúc vòng lập &ndash;&gt;-->
                     {% if current_user.is_authenticated %}s
                         <li class="nav-item">
                             <a class="nav-link text-info" href="/">

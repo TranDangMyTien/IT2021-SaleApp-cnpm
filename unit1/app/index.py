@@ -2,7 +2,7 @@
 import math
 from flask import render_template, request, redirect, session, jsonify
 # Đối tượng session nằm trên server lưu tạm giỏi hàng (không cần lưu trong database)
-import dao, utils
+import dao,utils
 # dao: truy vấn databasse, utils thực hiện các chức năng tiện ích
 from app import app, login
 from flask_login import login_user, logout_user, login_required
