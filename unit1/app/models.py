@@ -23,7 +23,7 @@ class BaseModel(db.Model):
 
 
 # Tài khoản
-class Account(BaseModel, UserMixin):
+class Account(db.Model, UserMixin):
     __tablename__ = 'account'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -338,14 +338,32 @@ if __name__ == "__main__":
 
 
 
-        # l = FlightTicket(id=1, name='HN-SG', price=2680000, image='https://images.pexels.com/photos/414110/pexels-photo-414110.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=1, id_regulation=1)
-        # l1 = FlightTicket(id=2, name='HN-CT', price=2000000, image='https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=2, id_regulation=1)
-        # l2 = FlightTicket(id=3, name='HN-CT', price=1500000, image='https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=2, id_regulation=1)
-        # l3 = FlightTicket(id=4, name='HN-ST', price=3500000, image='https://images.pexels.com/photos/1004665/pexels-photo-1004665.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=3, id_regulation=1)
-        # l4 = FlightTicket(id=5, name='CT-DL', price=2000000, image='https://images.pexels.com/photos/1470405/pexels-photo-1470405.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=4, id_regulation=1)
+        # l = FlightTicket(name='HN-SG', price=690000, image='https://images.pexels.com/photos/414110/pexels-photo-414110.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=1, id_regulation=1)
+        # l1 = FlightTicket(name='HN-CT', price=600000, image='https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=2, id_regulation=1)
+        # l2 = FlightTicket(name='HN-CT', price=2500000, image='https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=2, id_regulation=2)
+        # l3 = FlightTicket(name='HN-ST', price=920000, image='https://images.pexels.com/photos/1004665/pexels-photo-1004665.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=3, id_regulation=1)
+        # l4 = FlightTicket(name='CT-DL', price=2682003, image='https://images.pexels.com/photos/1470405/pexels-photo-1470405.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=4, id_regulation=2)
+        #
+        # l5 = FlightTicket(name='CT-SG', price=1200000, image='https://images.pexels.com/photos/1107717/pexels-photo-1107717.jpeg', flight_id=6, id_regulation=2)
+        # l6 = FlightTicket(name='CT-DL', price=2060000, image='https://images.pexels.com/photos/1470405/pexels-photo-1470405.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=6, id_regulation=2)
+        # l7 = FlightTicket(name='CT-SG', price=2200000, image='https://images.pexels.com/photos/1107717/pexels-photo-1107717.jpeg', flight_id=6, id_regulation=2)
+        # l8 = FlightTicket(name='CT-DL', price=2360000, image='https://images.pexels.com/photos/1470405/pexels-photo-1470405.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=6, id_regulation=2)
+        # l9 = FlightTicket(name='HN-CT', price=2200000, image='https://images.pexels.com/photos/169647/pexels-photo-169647.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2', flight_id=2, id_regulation=1)
+        # l10 = FlightTicket(name='CT-SG', price=1000000, image='https://images.pexels.com/photos/1107717/pexels-photo-1107717.jpeg', flight_id=6, id_regulation=2)
+        # l11 = FlightTicket(name='CT-SG', price=1200000, image='https://images.pexels.com/photos/1107717/pexels-photo-1107717.jpeg', flight_id=6, id_regulation=2)
+        #
+        #
         # db.session.add(l)
         # db.session.add(l1)
         # db.session.add(l2)
         # db.session.add(l3)
         # db.session.add(l4)
+        # db.session.add(l5)
+        # db.session.add(l6)
+        # db.session.add(l7)
+        # db.session.add(l8)
+        # db.session.add(l9)
+        # db.session.add(l10)
+        # db.session.add(l1)
+        # db.session.add(l6)
         # db.session.commit()

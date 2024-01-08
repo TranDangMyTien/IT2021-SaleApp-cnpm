@@ -11,7 +11,7 @@ app.secret_key = 'jaoiuas8902BILbkjb###AKHBK'
 app.config["SQLALCHEMY_DATABASE_URI"] ="mysql+pymysql://root:m1234567890@localhost/cnpm1?charset=utf8mb4"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 #Cấu hình 1 trang có 6 sản phẩm
-app.config["PAGE_SIZE"] = 6
+app.config["PAGE_SIZE"] = 8
 
 db = SQLAlchemy(app=app)
 login = LoginManager(app=app)

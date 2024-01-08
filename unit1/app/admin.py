@@ -12,23 +12,34 @@ class MyAdminIndex(AdminIndexView):
     def index(self):
         return self.render('admin/index.html', stats=dao.count_flighttickets_by_flight())
 
+
 # Tạo lớp chứng thực tài khoản thì mới thấy tab nào đó
 class AuthenticatedUser(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated
 
+
 # Tạo lớp chứng thực cho kiểu Model, và nó là role Admin
-class AuthenticatedAdmin(ModelView):
+class AuthenticatedEmployee(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.EMPLOYEE
 
-class AuthenticatedManager(BaseView):
+
+class AuthenticatedAdmin(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRoleEnum.ADMIN
 
 
+# Lớp chứng thực cho nhân viên và quản trị
+
+class AuthenticatedAdminAndEmployee(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and (
+                    current_user.user_role == UserRoleEnum.ADMIN or current_user.user_role == UserRoleEnum.EMPLOYEE)
+
+
 # MyFlightTicketView kế thừa lại ModelView
-class MyFlightTicketView(AuthenticatedAdmin):
+class MyFlightTicketView(AuthenticatedAdminAndEmployee):
     # Tab FlightTicket (trong trang admin) : chỉ hiện những cột dưới
     column_list = ['id', 'name', 'price']
     # Tìm kiếm theo name
@@ -44,12 +55,10 @@ class MyFlightTicketView(AuthenticatedAdmin):
     # def is_accessible(self):
     #     return current_user.is_authenticated
 
+
 # Tab Flight
-class MyFlightView(AuthenticatedAdmin):
+class MyFlightView(AuthenticatedAdminAndEmployee):
     column_list = ['name', 'flighttickets']
-
-
-
 
 
 # Tab thống kê báo cáo
@@ -68,6 +77,7 @@ class MyLogoutView(AuthenticatedUser):
     def index(self):
         logout_user()
         return redirect('/admin')
+
 
 # Tạo trang admin có tên là Home-QUẢN TRỊ BÁN HÀNG (Dùng bootstrap4: thư viện hỗ trợ sẵn)
 admin = Admin(app=app, name="QUẢN TRỊ BÁN HÀNG", template_mode='bootstrap4', index_view=MyAdminIndex())
